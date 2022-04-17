@@ -1,0 +1,33 @@
+{% extends 'auctions/layout.html' %}
+
+{% block body %}
+    <p class="display-6">Watchlist</p>
+    <hr>
+
+    <div style="margin:0px" class="row row-cols-1 row-cols-md-5 g-4">
+        {% for listing in watching %}
+            <div class="col">
+                <div class="zoom card shadow p-3 mb-5 bg-body rounded">
+                    <a href="{% url 'listing' listing.id %}">
+                        {% if listing.image %}
+                            <img src="{{ listing.image }}" class="card-img-top" alt="Product Image" style="height:200px">
+                        {% else %}
+                            <img src="../static/auctions/no_image.jpg" class="card-img-top" alt="No image" style="height:200px">
+                        {% endif %}
+                    </a>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ listing.title }}</h5>
+                        <p class="card-text">{{ listing.description }}</p>
+                        {% if listing.current_price.bid == 0 %}
+                            <p class="card-text"><strong>No Bids Yet.</strong></p>
+                        {% else %}
+                            <p class="card-text"><span class="badge bg-success">Current Price</span> #{{ listing.current_price }}</p>
+                        {% endif %}
+                        <p class="card-text"><span class="badge bg-warning text-dark">Starting Bid</span> #{{ listing.starting_bid }}</p>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p>No listings in watchlist.</p>
+        {% endfor %}
+{% endblock  %}

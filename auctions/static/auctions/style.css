@@ -1,0 +1,13 @@
+.zoom:hover {
+  -ms-transform: scale(1.03); /* IE 9 */
+  -webkit-transform: scale(1.03); /* Safari 2-8 */
+  transform: scale(1.03); 
+}
+
+span.badge {
+  font-size: smaller;
+}
+
+p.display-6 {
+  margin-left: 20px;
+}

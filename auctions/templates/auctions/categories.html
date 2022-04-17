@@ -1,0 +1,22 @@
+{% extends 'auctions/layout.html' %}
+
+{% block body %}
+    <p class="display-6">Categories</p>
+    <hr>
+
+    <div style="margin-left: 10px;" class="row  row-cols-1 row-cols-md-6 g-4">
+        {% for category in categories %}
+        <div class="col">
+            <div class="card">
+                <div style="text-align: justify" class="card-body">
+                    <a href="{% url 'category_list' category %}"><h4>{{ category }}</h4></a>
+                    <!-- <a href="{% url 'category_list' category %}" class="btn btn-primary btn-sm">Browse</a> -->
+                </div>
+            </div>
+        </div>
+        <br>
+        {% empty %}
+            <p>No available category.</p>
+        {% endfor %}
+    </div>
+{% endblock  %}

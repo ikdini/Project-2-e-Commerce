@@ -1,0 +1,157 @@
+{% extends 'auctions/layout.html' %}
+
+{% block body %}
+
+    <div style="margin:20px" class="row mb-2">
+        <div style="width:50%; height:400px" class="col-md-6">
+            {% if listing.image %}
+                <img src="{{ listing.image }}" alt="Product Image" style="height:100%; width:80%">
+            {% else %}
+                <img src="../static/auctions/no_image.jpg" alt="No image" style="height:100%; width:80%">
+            {% endif %}
+        </div>
+
+        <div style="background-color: rgba(240, 235, 235, 0.548); width:50%; height:400px" class="col-md-6">
+            <p class="display-5">{{ listing.title }}</p>
+            <p>{{ listing.description }}</p>
+            {% if listing.current_price.bid == 0 %}
+               <p><span class="badge bg-success">Current Price</span><strong> No Bids Yet.</strong></p>
+            {% else %}
+                <p><span class="badge bg-success">Current Price</span> #{{ listing.current_price }}</p>
+            {% endif %}
+            <p><span class="badge bg-warning text-dark">Starting Bid</span> #{{ listing.starting_bid }}</p>
+            <hr>
+            {% if user.is_authenticated %}
+                {% if listing.active %}
+                    {% if not good_bid %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            Bid Rejected!!! Bid must be at least equal to the starting bid and must be greater than the current price.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% elif good_bid == 2 %}
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            Congratulations! Your bid has been placed.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div> 
+                    {% endif %}
+                    <div style="margin-top:10px" class="row align-items-start">
+                        <div class="col">
+                            <div>
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                                    Place Bid
+                                </button>
+                            </div>
+                
+                            <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="staticBackdropLabel">Enter Bid</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <form  action="{% url 'bid' listing.id %}" method="post">
+                                            {% csrf_token %}
+                                            <div class="modal-body">
+                                                <div class="input-group mb-3">
+                                                    <span class="input-group-text">#</span>
+                                                    <input type="number" min="0" class="form-control" id="bid" name="bid" aria-describedby="basic-addon1" required>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Bid</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <form action="{% url 'toggle_watchlist' listing_id=listing.id %}" method="post">
+                                {% csrf_token %}
+                                {% if watching %}
+                                    <button style="font-size: smaller;" type="submit" class="btn btn-danger">Remove from Watchlist</button>
+                                {% else %}
+                                    <button type="submit" class="btn btn-primary">Add to Watchlist</button>
+                                {% endif %}
+                            </form>
+                        </div>
+                        {% if user == listing.seller %}
+                            <div class="col">
+                                <form action="{% url 'close_auction' listing.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger">Close Auction</button>
+                                </form>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% else %}                    
+                    <p><span class="badge bg-info text-dark">Listing closed</span></p>
+                    {% if user == listing.current_price.bidder %}
+                        <p><span class="badge bg-success">Congratulations! You won this Auction</span></p>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+    <hr>
+
+    <div style="margin:20px" class="row mb-2">
+        <div class="col-md-6">
+            <p class="h2">Additional Details</p>
+            <hr>
+            {% if listing.category %}
+            <p><b>Category: </b>{{ listing.category }}</p>
+            {% endif %}
+            <p><b>Seller: </b>{{ listing.seller }}</p>
+            <p><b>Created: </b>{{ listing.created }}</p>
+        </div>
+        <div class="col-md-6">
+            <p class="h2">Customer Reviews</p>
+            <hr>
+
+            {% if user.is_authenticated %}
+                <div>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        Add Comment
+                    </button>
+                </div>
+                <br>
+    
+                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="staticBackdropLabel">Add your comment</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form action="{% url 'comment' listing.id %}" method="post">
+                            {% csrf_token %}
+                            <div class="modal-body">
+                                <textarea name="comment" class="form-control" id="exampleFormControlTextarea1" rows="10" required></textarea>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Post</button>
+                            </div>
+                      </div>
+                    </div>
+                </div>
+            {% endif %}
+    
+    
+            {% for comment in comments %}
+                <ul style="list-style: none;">
+                    <li>
+                        <b>{{ comment.author }}:</b>
+                        {{ comment.message }}
+                    </li>
+                </ul>
+                <hr>
+            {% empty %}
+                <p>No comments yet.</p> 
+            {% endfor %}
+        </div>
+    </div>
+    
+{% endblock  %}

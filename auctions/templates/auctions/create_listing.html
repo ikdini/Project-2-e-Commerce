@@ -1,0 +1,56 @@
+{% extends 'auctions/layout.html' %}
+
+{% block body %}
+    <p class="display-6">Create Listing</p>
+    <hr>
+
+    <div style="width:80%; margin-left: 20px;">
+        <form action="{% url 'create_listing' %}" method="post">
+            {% csrf_token %}
+
+            <label class="form-label">Title:</label>
+            {{ create_listing.title }}
+            <div id="passwordHelpBlock" class="form-text">*required field</div>
+            <br>
+
+            <label class="form-label">Description:</label>
+            {{ create_listing.description }}
+            <div id="passwordHelpBlock" class="form-text">*required field</div>
+            <br>
+
+            <label class="form-label">Image:</label>
+            {{ create_listing.image }}
+            <br>
+
+            <div class="row g-3 align-items-center">
+                <div class="col-auto">
+                  <label for="inputPassword6" class="col-form-label">Starting Bid:</label>
+                </div>
+                <div class="col-auto">
+                  <div class="input-group">
+                    <span class="input-group-text">#</span>
+                    {{ create_listing.starting_bid }}
+                  </div>
+                </div>
+                <div class="col-auto">
+                  <span id="passwordHelpInline" class="form-text">
+                    *required field
+                  </span>
+                </div>
+            </div>
+            <br>
+
+            <div class="row g-3 align-items-center">
+                <div class="col-auto">
+                  <label for="inputPassword6" class="col-form-label">Category:</label>
+                </div>
+                <div class="col-auto">
+                    {{ create_listing.category }}
+                </div>
+            </div>
+            <br>
+              
+            <button style="margin-bottom:50px" class="btn btn-primary" type="submit">POST</button>
+        </form>
+    </div>
+{% endblock  %}
